@@ -64,6 +64,8 @@ function runPutEffect(env, { channel, action, resolve }, cb) {
    Schedule the put in case another saga is holding a lock.
    The put will be executed atomically. ie nested puts will execute after
    this put has terminated.
+   如果另一个 saga 持有一个锁，则将 put 加入计划表中。
+   put 将会“原子地”执行任务。比如 嵌套 puts 将会在当前 put 终止后执行。
    **/
   asap(() => {
     let result
