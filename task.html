@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>task | redux-saga源码解析</title>
+    <meta name="description" content="redux-saga源码解析">
+    
+    
+    <link rel="preload" href="/LFESC/redux-saga/assets/css/0.styles.ab26a475.css" as="style"><link rel="preload" href="/LFESC/redux-saga/assets/js/app.be626336.js" as="script"><link rel="preload" href="/LFESC/redux-saga/assets/js/2.3b966b08.js" as="script"><link rel="preload" href="/LFESC/redux-saga/assets/js/26.1596fc16.js" as="script"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/10.a154d31c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/11.a743860c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/12.d28d56d4.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/13.32186fea.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/14.17db352c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/15.a9d9bc2d.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/16.531df80e.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/17.236a979f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/18.6a98a8b6.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/19.6f90f549.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/20.e4926580.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/21.e59add08.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/22.938a3ace.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/23.9c8abc28.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/24.99181397.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/25.6f35883f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/27.4c5370ff.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/28.21aad113.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/29.2b5db989.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/3.5878fa5f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/4.39b66a9e.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/5.19b6e40d.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/6.bf1c640f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/7.f03a006d.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/8.83b63d11.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/9.dee19d34.js">
+    <link rel="stylesheet" href="/LFESC/redux-saga/assets/css/0.styles.ab26a475.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/LFESC/redux-saga/" class="home-link router-link-active"><!----> <span class="site-name">redux-saga源码解析</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"> <a href="https://github.com/LFESC/redux-saga" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"> <a href="https://github.com/LFESC/redux-saga" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>task</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/LFESC/redux-saga/task.html#源码地址" class="sidebar-link">源码地址</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/LFESC/redux-saga/task.html#解析" class="sidebar-link">解析</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/task.html#isrunning" class="sidebar-link">isRunning</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/task.html#iscancelled" class="sidebar-link">isCancelled</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/task.html#result" class="sidebar-link">result</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/task.html#error" class="sidebar-link">error</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/task.html#topromise" class="sidebar-link">toPromise</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/task.html#cancel" class="sidebar-link">cancel</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/task.html#end" class="sidebar-link">end</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1>task</h1> <p>task 并不是一个直接暴露给外部的 api，它是在调用其它 api 之后返回的对象，这些 api 有：</p> <ul><li>middleware.run</li> <li>fork</li> <li>runSaga
+还有一些 api 接收 task 作为参数，这些 api 有：</li> <li>cancel</li> <li>join</li></ul> <h2 id="源码地址"><a href="#源码地址" aria-hidden="true" class="header-anchor">#</a> 源码地址</h2> <p><code>packages/core/internal/newTask.js</code></p> <h2 id="解析"><a href="#解析" aria-hidden="true" class="header-anchor">#</a> 解析</h2> <p>newTask 顾名思义它会创建一个 task 对象，这个对象包含一些 fields 和 methods，我们接下来就分别介绍一下官网里面介绍的 methods。
+在介绍主要的方法之前我先简单介绍一下前置的参数和逻辑：</p> <ul><li>status: 表示 task 的状态</li> <li>taskResult: 表示 task 最终执行的结果</li> <li>taskError: 表示 task 执行过程中产生的错误</li> <li>deferredEnd: 参考下方 toPromise 方法</li> <li>cancelledDueToErrorTasks: 由于执行过程中报错而被取消的 tasks 数组</li> <li>queue: 任务队列，包含主任务和分支任务，关于 queue 的相关解析可以看 <a href="/LFESC/redux-saga/forkQueue.html">forkQueue</a> 这篇</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">newTask</span><span class="token punctuation">(</span><span class="token parameter">env<span class="token punctuation">,</span> mainTask<span class="token punctuation">,</span> parentContext<span class="token punctuation">,</span> parentEffectId<span class="token punctuation">,</span> meta<span class="token punctuation">,</span> isRoot<span class="token punctuation">,</span> cont</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> status <span class="token operator">=</span> <span class="token constant">RUNNING</span>
+  <span class="token keyword">let</span> taskResult
+  <span class="token keyword">let</span> taskError
+  <span class="token keyword">let</span> deferredEnd <span class="token operator">=</span> <span class="token keyword">null</span>
+
+  <span class="token keyword">const</span> cancelledDueToErrorTasks <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">const</span> context <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>parentContext<span class="token punctuation">)</span>
+  <span class="token keyword">const</span> queue <span class="token operator">=</span> <span class="token function">forkQueue</span><span class="token punctuation">(</span>
+    mainTask<span class="token punctuation">,</span>
+    <span class="token keyword">function</span> <span class="token function">onAbort</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      cancelledDueToErrorTasks<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token operator">...</span>queue<span class="token punctuation">.</span><span class="token function">getTasks</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">t</span> <span class="token operator">=&gt;</span> t<span class="token punctuation">.</span>meta<span class="token punctuation">.</span>name<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    end<span class="token punctuation">,</span>
+  <span class="token punctuation">)</span>
+
+  <span class="token keyword">function</span> <span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">end</span><span class="token punctuation">(</span><span class="token parameter">result<span class="token punctuation">,</span> isErr</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">setContext</span><span class="token punctuation">(</span><span class="token parameter">props</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">toPromise</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">const</span> task <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token comment">// fields</span>
+    <span class="token punctuation">[</span><span class="token constant">TASK</span><span class="token punctuation">]</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    id<span class="token punctuation">:</span> parentEffectId<span class="token punctuation">,</span>
+    meta<span class="token punctuation">,</span>
+    isRoot<span class="token punctuation">,</span>
+    context<span class="token punctuation">,</span>
+    joiners<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    queue<span class="token punctuation">,</span>
+
+    <span class="token comment">// methods</span>
+    cancel<span class="token punctuation">,</span>
+    cont<span class="token punctuation">,</span>
+    end<span class="token punctuation">,</span>
+    setContext<span class="token punctuation">,</span>
+    toPromise<span class="token punctuation">,</span>
+    <span class="token function-variable function">isRunning</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> status <span class="token operator">===</span> <span class="token constant">RUNNING</span><span class="token punctuation">,</span>
+    <span class="token function-variable function">isCancelled</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> status <span class="token operator">===</span> <span class="token constant">CANCELLED</span> <span class="token operator">||</span> <span class="token punctuation">(</span>status <span class="token operator">===</span> <span class="token constant">RUNNING</span> <span class="token operator">&amp;&amp;</span> mainTask<span class="token punctuation">.</span>status <span class="token operator">===</span> <span class="token constant">CANCELLED</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token function-variable function">isAborted</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> status <span class="token operator">===</span> <span class="token constant">ABORTED</span><span class="token punctuation">,</span>
+    <span class="token function-variable function">result</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> taskResult<span class="token punctuation">,</span>
+    <span class="token function-variable function">error</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> taskError<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> task
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="isrunning"><a href="#isrunning" aria-hidden="true" class="header-anchor">#</a> isRunning</h3> <p>这个方法很简单就是判断一下当前的 <code>status === RUNNING</code> 若任务还未返回或抛出了一个错误则为 true。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function-variable function">isRunning</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> status <span class="token operator">===</span> <span class="token constant">RUNNING</span>
+</code></pre></div><h3 id="iscancelled"><a href="#iscancelled" aria-hidden="true" class="header-anchor">#</a> isCancelled</h3> <p>这个方法是判断任务是否已经取消。
+主要判断两个条件是否成立：</p> <ul><li><code>status === CANCELLED</code>: 如果当前任务的状态为 CANCELLED 则返回 true</li> <li><code>(status === RUNNING &amp;&amp; mainTask.status === CANCELLED)</code> 如果主任务取消并且当前任务正在执行，返回 true</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function-variable function">isCancelled</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> status <span class="token operator">===</span> <span class="token constant">CANCELLED</span> <span class="token operator">||</span> <span class="token punctuation">(</span>status <span class="token operator">===</span> <span class="token constant">RUNNING</span> <span class="token operator">&amp;&amp;</span> mainTask<span class="token punctuation">.</span>status <span class="token operator">===</span> <span class="token constant">CANCELLED</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+</code></pre></div><h3 id="result"><a href="#result" aria-hidden="true" class="header-anchor">#</a> result</h3> <p>直接将任务的返回值返回</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function-variable function">result</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> taskResult<span class="token punctuation">,</span>
+</code></pre></div><h3 id="error"><a href="#error" aria-hidden="true" class="header-anchor">#</a> error</h3> <p>直接将错误对象返回</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function-variable function">error</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> taskError<span class="token punctuation">,</span>
+</code></pre></div><h3 id="topromise"><a href="#topromise" aria-hidden="true" class="header-anchor">#</a> toPromise</h3> <p>这个方法的目的是返回一个 promise 对象，如果 <code>status === ABORTED</code> 也就是任务报错了，则返回一个 rejected 状态值为 taskError 的 promise 对象，如果没有报错并且 <code>status !== RUNNING</code> 也就是任务正确执行完毕则返回一个 fulfilled 状态值为 taskResult 的 promise 对象。</p> <div class="tip custom-block"><p class="custom-block-title">注意：</p> <p>这个方法依赖一个方法 <code>deferred()</code> 去生成一个 promise 对象，这个方法很简单，你可以去 <code>pacages/deferred/src/index.js</code> 去看它的源码。</p></div> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">toPromise</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>deferredEnd<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> deferredEnd<span class="token punctuation">.</span>promise
+  <span class="token punctuation">}</span>
+
+  deferredEnd <span class="token operator">=</span> <span class="token function">deferred</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>status <span class="token operator">===</span> <span class="token constant">ABORTED</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    deferredEnd<span class="token punctuation">.</span><span class="token function">reject</span><span class="token punctuation">(</span>taskError<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>status <span class="token operator">!==</span> <span class="token constant">RUNNING</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    deferredEnd<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>taskResult<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> deferredEnd<span class="token punctuation">.</span>promise
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="cancel"><a href="#cancel" aria-hidden="true" class="header-anchor">#</a> cancel</h3> <p>cancel 方法只有在 <code>status === RUNNING</code> 也就是 task 正在执行的时候才会执行取消操作。</p> <ul><li>首先设置 <code>status = CANCELLED</code></li> <li>其次执行 <code>queue.cancelAll()</code> 关于这个方法的详情可以去看 <a href="/LFESC/redux-saga/forkQueue.html">forkQueue</a> 这篇</li> <li>最后执行 <code>end(TASK_CANCEL, false)</code>
+这里面也就是最后一步比较复杂，它调用了另一个方法 end，我们会在下面讲解 end 方法。</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/**
+  This may be called by a parent generator to trigger/propagate    cancellation
+  cancel all pending tasks (including the main task), then end the current task.
+  父生成器可以调用它来 触发/传播 取消
+  取消所有挂起的任务(包括主任务)，然后结束当前任务。
+
+  Cancellation propagates down to the whole execution tree held by this Parent task
+  It's also propagated to all joiners of this task and their execution tree/joiners
+  取消将向下传播到此父任务所持有的整个执行树
+  它还传播到此任务的所有参与者及其执行树/参与者
+
+  Cancellation is noop for terminated/Cancelled tasks tasks
+  取消是 noop 对于 终止/取消 的任务的任务
+**/</span>
+<span class="token keyword">function</span> <span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>status <span class="token operator">===</span> <span class="token constant">RUNNING</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Setting status to CANCELLED does not necessarily mean that the task/iterators are stopped</span>
+    <span class="token comment">// 将状态设置为 CANCELLED 并不一定意味着 任务/迭代器 被停止</span>
+    <span class="token comment">// effects in the iterator's finally block will still be executed</span>
+    <span class="token comment">// //迭代器的 finally 块中的 effects 仍然会执行</span>
+    status <span class="token operator">=</span> <span class="token constant">CANCELLED</span>
+    queue<span class="token punctuation">.</span><span class="token function">cancelAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// Ending with a TASK_CANCEL will propagate the Cancellation to all joiners</span>
+    <span class="token comment">// 以 TASK_CANCEL 结尾将把取消传播给所有的参与者</span>
+    <span class="token function">end</span><span class="token punctuation">(</span><span class="token constant">TASK_CANCEL</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="end"><a href="#end" aria-hidden="true" class="header-anchor">#</a> end</h3> <p>end 方法里面有一个大的判断 <code>!isErr</code> 将整个代码分成两大块：</p> <ul><li>无 error</li> <li>有 error</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">end</span><span class="token punctuation">(</span><span class="token parameter">result<span class="token punctuation">,</span> isErr</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isErr<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="无-error"><a href="#无-error" aria-hidden="true" class="header-anchor">#</a> 无 error</h4> <p>如果 isErr 为假表示没有错误产生，则去判断 <code>result === TASK_CANCEL</code>，如果成立说明是 task 被取消了，修改 status，给 taskResult 赋值，如果有 deferredEnd 对象，则执行 <code>deferredEnd.resolve(result)</code>，如果不成立说明 task 已经完成，操作和上面一致。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isErr<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// The status here may be RUNNING or CANCELLED</span>
+  <span class="token comment">// If the status is CANCELLED, then we do not need to change it here</span>
+  <span class="token comment">// 这里的状态可能正在运行或被取消</span>
+  <span class="token comment">// 如果取消了状态，那么我们不需要在这里更改它</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>result <span class="token operator">===</span> <span class="token constant">TASK_CANCEL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    status <span class="token operator">=</span> <span class="token constant">CANCELLED</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>status <span class="token operator">!==</span> <span class="token constant">CANCELLED</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    status <span class="token operator">=</span> <span class="token constant">DONE</span>
+  <span class="token punctuation">}</span>
+  taskResult <span class="token operator">=</span> result
+  deferredEnd <span class="token operator">&amp;&amp;</span> deferredEnd<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="有-error"><a href="#有-error" aria-hidden="true" class="header-anchor">#</a> 有 error</h4> <ul><li>首先修改了 status 为 ABORTED</li> <li>剩下的代码都和 sagaError 有关，这个是一个处理 sagaError 里面错误的模块，会记录错误信息，最终返回给 onError 方法，我觉得并不是太重要，所以就不做深入展开了。</li> <li>给 taskError 赋值</li> <li>处理 deferredEnd 对象，这两步和上面无 error 的情况是一致的</li></ul> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isErr<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+  status <span class="token operator">=</span> <span class="token constant">ABORTED</span>
+  sagaError<span class="token punctuation">.</span><span class="token function">addSagaFrame</span><span class="token punctuation">(</span><span class="token punctuation">{</span> meta<span class="token punctuation">,</span> cancelledTasks<span class="token punctuation">:</span> cancelledDueToErrorTasks <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>task<span class="token punctuation">.</span>isRoot<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> sagaStack <span class="token operator">=</span> sagaError<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// we've dumped the saga stack to string and are passing it to user's code</span>
+    <span class="token comment">// we know that it won't be needed anymore and we need to clear it</span>
+    <span class="token comment">// 我们已经将 saga 堆栈转储为 string 并将其传递给用户代码</span>
+    <span class="token comment">// 我们知道它将不再需要，我们需要清理它</span>
+    sagaError<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    env<span class="token punctuation">.</span><span class="token function">onError</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token punctuation">{</span> sagaStack <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  taskError <span class="token operator">=</span> result
+  deferredEnd <span class="token operator">&amp;&amp;</span> deferredEnd<span class="token punctuation">.</span><span class="token function">reject</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="处理-joiners"><a href="#处理-joiners" aria-hidden="true" class="header-anchor">#</a> 处理 joiners</h4> <p>处理完 !isError 之后，还有些逻辑需要处理：</p> <ul><li>调用 <code>task.cont</code> 这个 cont 就是 newTask 方法的最后一个参数，我看了一下，它的值不是 noop 就是 cb，当然 noop 是不会做任何事情的，如果是 cb 那么就是继续执行 task 之外的代码。</li> <li>接着处理 joiners，首先遍历所有 joiners 然后执行所有 joiner 的 cb，最后将 task.joiners 置空，joiners 和 join 方法相关，join 方法会将当前 task push 到 taskToJoin.joiners 里面，当 taskToJoin 执行完毕才会执行外部的 task，这也是 join 方法的目的：创建一个 Effect 描述信息，用来命令 middleware 等待之前的一个分叉任务的结果。</li></ul> <div class="language-js extra-class"><pre class="language-js"><code>task<span class="token punctuation">.</span><span class="token function">cont</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> isErr<span class="token punctuation">)</span>
+task<span class="token punctuation">.</span>joiners<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">joiner</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  joiner<span class="token punctuation">.</span><span class="token function">cb</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> isErr<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+task<span class="token punctuation">.</span>joiners <span class="token operator">=</span> <span class="token keyword">null</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">最后更新时间: </span> <span class="time">6/25/2019, 5:40:25 PM</span></div></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/LFESC/redux-saga/assets/js/app.be626336.js" defer></script><script src="/LFESC/redux-saga/assets/js/2.3b966b08.js" defer></script><script src="/LFESC/redux-saga/assets/js/26.1596fc16.js" defer></script>
+  </body>
+</html>

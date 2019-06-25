@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>createSagaMiddleware | redux-saga源码解析</title>
+    <meta name="description" content="redux-saga源码解析">
+    
+    
+    <link rel="preload" href="/LFESC/redux-saga/assets/css/0.styles.ab26a475.css" as="style"><link rel="preload" href="/LFESC/redux-saga/assets/js/app.be626336.js" as="script"><link rel="preload" href="/LFESC/redux-saga/assets/js/2.3b966b08.js" as="script"><link rel="preload" href="/LFESC/redux-saga/assets/js/15.a9d9bc2d.js" as="script"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/10.a154d31c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/11.a743860c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/12.d28d56d4.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/13.32186fea.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/14.17db352c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/16.531df80e.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/17.236a979f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/18.6a98a8b6.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/19.6f90f549.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/20.e4926580.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/21.e59add08.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/22.938a3ace.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/23.9c8abc28.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/24.99181397.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/25.6f35883f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/26.1596fc16.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/27.4c5370ff.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/28.21aad113.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/29.2b5db989.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/3.5878fa5f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/4.39b66a9e.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/5.19b6e40d.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/6.bf1c640f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/7.f03a006d.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/8.83b63d11.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/9.dee19d34.js">
+    <link rel="stylesheet" href="/LFESC/redux-saga/assets/css/0.styles.ab26a475.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/LFESC/redux-saga/" class="home-link router-link-active"><!----> <span class="site-name">redux-saga源码解析</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"> <a href="https://github.com/LFESC/redux-saga" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"> <a href="https://github.com/LFESC/redux-saga" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>createSagaMiddleware</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/LFESC/redux-saga/middleware.html#源码位置" class="sidebar-link">源码位置</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/LFESC/redux-saga/middleware.html#解析" class="sidebar-link">解析</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/middleware.html#createsagamiddleware" class="sidebar-link">createSagaMiddleware</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/middleware.html#middleware-run" class="sidebar-link">middleware.run</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1>createSagaMiddleware</h1> <p>这篇主要讲 createSagaMiddleware 和 middleware.run 这两个 api。</p> <h2 id="源码位置"><a href="#源码位置" aria-hidden="true" class="header-anchor">#</a> 源码位置</h2> <p><code>core/src/internal/middleware.js</code></p> <h2 id="解析"><a href="#解析" aria-hidden="true" class="header-anchor">#</a> 解析</h2> <h3 id="createsagamiddleware"><a href="#createsagamiddleware" aria-hidden="true" class="header-anchor">#</a> createSagaMiddleware</h3> <p>创建一个 Redux middleware，并将 Sagas 连接到 Redux Store。
+这个方法的内部实现就是下方的 sagaMiddlewareFactory 方法。</p> <h4 id="sagamiddlewarefactory"><a href="#sagamiddlewarefactory" aria-hidden="true" class="header-anchor">#</a> sagaMiddlewareFactory</h4> <p>createSagaMiddleware 就是 sagaMiddlewareFactory</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">sagaMiddlewareFactory</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> context <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> channel <span class="token operator">=</span> <span class="token function">stdChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sagaMonitor<span class="token punctuation">,</span> <span class="token operator">...</span>options <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">function</span> <span class="token function">sagaMiddleware</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> getState<span class="token punctuation">,</span> dispatch <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  sagaMiddleware<span class="token punctuation">.</span><span class="token function-variable function">run</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  sagaMiddleware<span class="token punctuation">.</span><span class="token function-variable function">setContext</span> <span class="token operator">=</span> <span class="token parameter">props</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> sagaMiddleware
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="sagamiddleware"><a href="#sagamiddleware" aria-hidden="true" class="header-anchor">#</a> sagaMiddleware</h4> <p>createSagaMiddleware 返回的是一个叫 sagaMiddleware 的方法
+sagaMiddleware 就是一个 redux 的 middleware 所以它接收 getState 和 dispatch 两个参数
+返回一个高阶方法，这个也是 redux 的 middleware 的要求，在这个高阶函数里面
+有队 sagaMonitor 的处理，这个我们稍后会讲，然后调用了 <code>next(action)</code> 这个没什么可说的
+最后执行 <code>channel.put(action)</code> 然后返回 <code>next(action)</code> 的结果。
+主要的逻辑就在 <code>channel.put(action)</code> 这里面，这个我们会在 <a href="/LFESC/redux-saga/channel.html">channel</a> 这篇里面详细介绍。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">sagaMiddleware</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> getState<span class="token punctuation">,</span> dispatch <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  boundRunSaga <span class="token operator">=</span> <span class="token function">runSaga</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token operator">...</span>options<span class="token punctuation">,</span>
+    context<span class="token punctuation">,</span>
+    channel<span class="token punctuation">,</span>
+    dispatch<span class="token punctuation">,</span>
+    getState<span class="token punctuation">,</span>
+    sagaMonitor<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=&gt;</span> <span class="token parameter">action</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>sagaMonitor <span class="token operator">&amp;&amp;</span> sagaMonitor<span class="token punctuation">.</span>actionDispatched<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      sagaMonitor<span class="token punctuation">.</span><span class="token function">actionDispatched</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token function">next</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span> <span class="token comment">// hit reducers</span>
+    channel<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="middleware-run"><a href="#middleware-run" aria-hidden="true" class="header-anchor">#</a> middleware.run</h3> <h4 id="sagamiddleware-run"><a href="#sagamiddleware-run" aria-hidden="true" class="header-anchor">#</a> sagaMiddleware.run</h4> <p>middleware.run 对应的就是 sagaMiddleware.run 这个方法
+抛开 dev 的代码，其实就执行了 <code>boundRunSaga(...args)</code> 这行代码，
+而 boundRunSaga 是 runSaga 这个方法 bind 了一些前置参数： <code>boundRunSaga = runSaga.bind(null, {// ...})</code>，所以当你使用 <code>middleware.run(saga, ...args)</code> 去调用时，除了 saga 和 ...args 之外
+还给 runSaga 传递了一个 object 里面包含了若干参数。
+runSaga 的定义在 runSaga.js 这个文件里面，我们会在 <a href="/LFESC/redux-saga/runSaga.html">runSaga</a> 这篇里面详细介绍。</p> <div class="language-js extra-class"><pre class="language-js"><code>boundRunSaga <span class="token operator">=</span> <span class="token function">runSaga</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token operator">...</span>options<span class="token punctuation">,</span>
+  context<span class="token punctuation">,</span>
+  channel<span class="token punctuation">,</span>
+  dispatch<span class="token punctuation">,</span>
+  getState<span class="token punctuation">,</span>
+  sagaMonitor<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code>sagaMiddleware<span class="token punctuation">.</span><span class="token function-variable function">run</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>boundRunSaga<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">'Before running a Saga, you must mount the Saga middleware on the Store using applyMiddleware'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">boundRunSaga</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">最后更新时间: </span> <span class="time">6/25/2019, 5:40:25 PM</span></div></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/LFESC/redux-saga/assets/js/app.be626336.js" defer></script><script src="/LFESC/redux-saga/assets/js/2.3b966b08.js" defer></script><script src="/LFESC/redux-saga/assets/js/15.a9d9bc2d.js" defer></script>
+  </body>
+</html>

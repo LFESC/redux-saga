@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>channel | redux-saga源码解析</title>
+    <meta name="description" content="redux-saga源码解析">
+    
+    
+    <link rel="preload" href="/LFESC/redux-saga/assets/css/0.styles.ab26a475.css" as="style"><link rel="preload" href="/LFESC/redux-saga/assets/js/app.be626336.js" as="script"><link rel="preload" href="/LFESC/redux-saga/assets/js/2.3b966b08.js" as="script"><link rel="preload" href="/LFESC/redux-saga/assets/js/7.f03a006d.js" as="script"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/10.a154d31c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/11.a743860c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/12.d28d56d4.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/13.32186fea.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/14.17db352c.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/15.a9d9bc2d.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/16.531df80e.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/17.236a979f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/18.6a98a8b6.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/19.6f90f549.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/20.e4926580.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/21.e59add08.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/22.938a3ace.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/23.9c8abc28.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/24.99181397.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/25.6f35883f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/26.1596fc16.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/27.4c5370ff.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/28.21aad113.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/29.2b5db989.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/3.5878fa5f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/4.39b66a9e.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/5.19b6e40d.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/6.bf1c640f.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/8.83b63d11.js"><link rel="prefetch" href="/LFESC/redux-saga/assets/js/9.dee19d34.js">
+    <link rel="stylesheet" href="/LFESC/redux-saga/assets/css/0.styles.ab26a475.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/LFESC/redux-saga/" class="home-link router-link-active"><!----> <span class="site-name">redux-saga源码解析</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"> <a href="https://github.com/LFESC/redux-saga" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"> <a href="https://github.com/LFESC/redux-saga" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>channel</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/LFESC/redux-saga/channel.html#源码位置" class="sidebar-link">源码位置</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/LFESC/redux-saga/channel.html#概述" class="sidebar-link">概述</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/LFESC/redux-saga/channel.html#解析" class="sidebar-link">解析</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/channel.html#channel" class="sidebar-link">channel</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/channel.html#eventchannel" class="sidebar-link">eventChannel</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/channel.html#multicastchannel" class="sidebar-link">multicastChannel</a></li><li class="sidebar-sub-header"><a href="/LFESC/redux-saga/channel.html#stdchannel" class="sidebar-link">stdChannel</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1>channel</h1> <p>channel 不仅作为接口保留给用户，并且其它的接口内部实现也调用了 channel 的方法，比如 take。</p> <h2 id="源码位置"><a href="#源码位置" aria-hidden="true" class="header-anchor">#</a> 源码位置</h2> <p><code>core/src/internal/channel.js</code></p> <h2 id="概述"><a href="#概述" aria-hidden="true" class="header-anchor">#</a> 概述</h2> <p>channel 返回了四个方法：channel eventChannel multicastChannel stdChannel。</p> <div class="tip custom-block"><p class="custom-block-title">注意：</p> <p>channel 里面依赖了 buffer 模块，所以如果你对 buffer 不太熟悉可以去看我对 <a href="/LFESC/redux-saga/buffers.html">buffers</a> 的解析。</p></div> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">channel</span><span class="token punctuation">(</span><span class="token parameter">buffer <span class="token operator">=</span> buffers<span class="token punctuation">.</span><span class="token function">expanding</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">eventChannel</span><span class="token punctuation">(</span><span class="token parameter">subscribe<span class="token punctuation">,</span> buffer <span class="token operator">=</span> buffers<span class="token punctuation">.</span><span class="token function">none</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">multicastChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">stdChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="解析"><a href="#解析" aria-hidden="true" class="header-anchor">#</a> 解析</h2> <p>channel 的实现内部依赖 buffer，所以如果你对它不了解建议去看 <a href="/LFESC/redux-saga/buffer.html">buffer</a> 这篇文章。</p> <div class="tip custom-block"><p class="custom-block-title">名词解释：</p> <p><strong>takers:</strong> 存放 cb
+<strong>buffer:</strong> 存放 put 进来的数据</p></div> <h3 id="channel"><a href="#channel" aria-hidden="true" class="header-anchor">#</a> channel</h3> <p>首先看 channel 这个方法，它返回了一个对象，定义了四个方法：take put close flush。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">channel</span><span class="token punctuation">(</span><span class="token parameter">buffer <span class="token operator">=</span> buffers<span class="token punctuation">.</span><span class="token function">expanding</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> closed <span class="token operator">=</span> <span class="token boolean">false</span>
+  <span class="token keyword">let</span> takers <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 这个方法和开发环境相关就先不看了</span>
+  <span class="token keyword">function</span> <span class="token function">checkForbiddenStates</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>closed <span class="token operator">&amp;&amp;</span> takers<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token function">internalErr</span><span class="token punctuation">(</span><span class="token constant">CLOSED_CHANNEL_WITH_TAKERS</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>takers<span class="token punctuation">.</span>length <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>buffer<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">throw</span> <span class="token function">internalErr</span><span class="token punctuation">(</span><span class="token string">'Cannot have pending takers with non empty buffer'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">put</span><span class="token punctuation">(</span><span class="token parameter">input</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">take</span><span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">flush</span><span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    take<span class="token punctuation">,</span>
+    put<span class="token punctuation">,</span>
+    flush<span class="token punctuation">,</span>
+    close<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="take"><a href="#take" aria-hidden="true" class="header-anchor">#</a> take</h4> <p>1.首先判断 closed 是否为 true，也就是 channel 是否终止，再判断 buffer 是否为空，如果条件成立则调用 cb(END) 终止 saga。
+2.如果上述判断不成立则判断是否 buffer 不为空，如果不为空则调用 cb(buffer.take) 将 buffer 顶端的消息传递给 cb。
+3.如果上述判断不成立则将 cb 放入 takers 队列。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">take</span><span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed <span class="token operator">&amp;&amp;</span> buffer<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token constant">END</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>buffer<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span>buffer<span class="token punctuation">.</span><span class="token function">take</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    takers<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>cb<span class="token punctuation">)</span>
+    cb<span class="token punctuation">.</span><span class="token function-variable function">cancel</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">remove</span><span class="token punctuation">(</span>takers<span class="token punctuation">,</span> cb<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="put"><a href="#put" aria-hidden="true" class="header-anchor">#</a> put</h4> <p>1.首先判断 closed 是否为 true，为 true 表示 channel 已经关闭了，则直接 return 什么都不做。
+2.接着判断 takers 是否为空，如果为空则将 input 存放到 buffer 里并返回。
+3.如果上述条件不成立则从 takers 里面拿出第一个 taker，并将 input 作为参数传递给它进行调用。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">put</span><span class="token punctuation">(</span><span class="token parameter">input</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>takers<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> buffer<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">const</span> cb <span class="token operator">=</span> takers<span class="token punctuation">.</span><span class="token function">shift</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token function">cb</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="flush"><a href="#flush" aria-hidden="true" class="header-anchor">#</a> flush</h4> <p>1.首先判断如果 channel 已经关闭了并且 buffer 为空则调用 cb(END)，并返回。
+2.如果上述判断不成立则用传递进来的 cb 调用 <a href="/LFESC/redux-saga/buffer.html">buffer.flush()</a> 的返回值，返回值是所有 buffer 里面的数据。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">flush</span><span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed <span class="token operator">&amp;&amp;</span> buffer<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token constant">END</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+  <span class="token function">cb</span><span class="token punctuation">(</span>buffer<span class="token punctuation">.</span><span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="close"><a href="#close" aria-hidden="true" class="header-anchor">#</a> close</h4> <p>1.如果 channel 已经关闭了就直接返回。
+2.否则将 closed 赋值为 true，表示 channel 关闭不允许做 put 操作了。
+3.清空 takers 并且调用所有的 taker，值为 END。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+
+  closed <span class="token operator">=</span> <span class="token boolean">true</span>
+
+  <span class="token keyword">const</span> arr <span class="token operator">=</span> takers
+  takers <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> len <span class="token operator">=</span> arr<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> len<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> taker <span class="token operator">=</span> arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+    <span class="token function">taker</span><span class="token punctuation">(</span><span class="token constant">END</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="eventchannel"><a href="#eventchannel" aria-hidden="true" class="header-anchor">#</a> eventChannel</h3> <p>我们看第4行代码可知，eventChannel 是在 channel 的基础上实现的，看最终返回的代码除了没有返回 put 方法，其余和 channel 一致，所以只要理解了 channel 再理解 eventChannel 就不难了，这回我们从参数下手去看源码的实现，因为 eventChannel 和 channel 的主要差别就是 新增了 subscribe 这个参数。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">eventChannel</span><span class="token punctuation">(</span><span class="token parameter">subscribe<span class="token punctuation">,</span> buffer <span class="token operator">=</span> buffers<span class="token punctuation">.</span><span class="token function">none</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> closed <span class="token operator">=</span> <span class="token boolean">false</span>
+  <span class="token keyword">let</span> unsubscribe
+
+  <span class="token keyword">const</span> chan <span class="token operator">=</span> <span class="token function">channel</span><span class="token punctuation">(</span>buffer<span class="token punctuation">)</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">close</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
+
+    closed <span class="token operator">=</span> <span class="token boolean">true</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>is<span class="token punctuation">.</span><span class="token function">func</span><span class="token punctuation">(</span>unsubscribe<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">unsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    chan<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  unsubscribe <span class="token operator">=</span> <span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token parameter">input</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isEnd</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
+    chan<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  unsubscribe <span class="token operator">=</span> <span class="token function">once</span><span class="token punctuation">(</span>unsubscribe<span class="token punctuation">)</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">unsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    take<span class="token punctuation">:</span> chan<span class="token punctuation">.</span>take<span class="token punctuation">,</span>
+    flush<span class="token punctuation">:</span> chan<span class="token punctuation">.</span>flush<span class="token punctuation">,</span>
+    close<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="subscribe"><a href="#subscribe" aria-hidden="true" class="header-anchor">#</a> subscribe</h4> <p>subscribe 的职责是初始化外部的事件来源，比如<a href="https://redux-saga.js.org/docs/advanced/Channels.html" target="_blank" rel="noopener noreferrer">官方文档<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>上面监听 setInterval 的那个例子。在源码中我们会执行这个 subscribe 这个方法，并传入一个方法，这个方法就是 emitter，当事件触发产生了什么 message 需要 eventChannel 里面的 taker 进行处理是，就调用 emitter(message)，这对应的就是 <code>chan.put(input)</code>，当然如果你想要结束 eventChannel 直接 emitter(END) 就可以了，所以 emitter 里面会先判断一下 <code>isEnd(input)</code> 如果成立就去执行 close()。</p> <div class="language-js extra-class"><pre class="language-js"><code>unsubscribe <span class="token operator">=</span> <span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token parameter">input</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isEnd</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+  chan<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre></div><h4 id="close-2"><a href="#close-2" aria-hidden="true" class="header-anchor">#</a> close</h4> <p>关于 eventChannel 另一个需要将的点就是结束 eventChannel 和 channel 的结束略有不同，因为 eventChannel 监听了一个事件，所以需要在 close 之前解除对事件的监听，所以从 close() 的方法里面我们看到了 unsubscribe 方法，这也是为什么我们的 subscribe 必须要返回一个 unsubscribe 方法的原因。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">const</span> <span class="token function-variable function">close</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+
+  closed <span class="token operator">=</span> <span class="token boolean">true</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>is<span class="token punctuation">.</span><span class="token function">func</span><span class="token punctuation">(</span>unsubscribe<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">unsubscribe</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  chan<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="buffer"><a href="#buffer" aria-hidden="true" class="header-anchor">#</a> buffer</h4> <p>eventChannel 默认是不会缓存消息的，因为 buffer 默认为 buffers.none()，所以 put 方法不会缓存 input，buffer 一直就为空，这也造成调用 take 方法时 <code>!buffer.isEmpty()</code> 为假，我们只能 <code>takers.push(cb)</code> 先将 taker 缓存起来，等到 put 调用时再去执行；最终的结果是每回 put 调用的时候就会将新的 input 交给 takers 队列里面的第一个 taker 去执行。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">eventChannel</span><span class="token punctuation">(</span><span class="token parameter">subscribe<span class="token punctuation">,</span> buffer <span class="token operator">=</span> buffers<span class="token punctuation">.</span><span class="token function">none</span><span class="token punctuation">(</span><span class="token punctuation">)</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+ <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">put</span><span class="token punctuation">(</span><span class="token parameter">input</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>takers<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> buffer<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">take</span><span class="token punctuation">(</span><span class="token parameter">cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed <span class="token operator">&amp;&amp;</span> buffer<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token constant">END</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>buffer<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span>buffer<span class="token punctuation">.</span><span class="token function">take</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    takers<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>cb<span class="token punctuation">)</span>
+    cb<span class="token punctuation">.</span><span class="token function-variable function">cancel</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">remove</span><span class="token punctuation">(</span>takers<span class="token punctuation">,</span> cb<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="multicastchannel"><a href="#multicastchannel" aria-hidden="true" class="header-anchor">#</a> multicastChannel</h3> <p>关于 multicastChannel，我并没有在官方的文档看到这个 api 的用法，我只能通过名称去揣测这个方法的作用，multicase 翻译成中文有多路广播之意，看了下源码发现确实是这个作用，下面我们就通过源码去看看它是如何实现的。</p> <div class="tip custom-block"><p class="custom-block-title">注意：</p> <p>所有的 channel 都会返回 take put close 方法，multicastChannel 也不例外，所以只要去看这几个 api 是如何实现的，也就了解了它的功能。</p></div> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">multicastChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> closed <span class="token operator">=</span> <span class="token boolean">false</span>
+  <span class="token keyword">let</span> currentTakers <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">let</span> nextTakers <span class="token operator">=</span> currentTakers
+
+  <span class="token keyword">const</span> <span class="token function-variable function">ensureCanMutateNextTakers</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">const</span> <span class="token function-variable function">close</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">[</span><span class="token constant">MULTICAST</span><span class="token punctuation">]</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token function">put</span><span class="token punctuation">(</span><span class="token parameter">input</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// ......</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function">take</span><span class="token punctuation">(</span><span class="token parameter">cb<span class="token punctuation">,</span> matcher <span class="token operator">=</span> matchers<span class="token punctuation">.</span>wildcard</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// ......</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    close<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="put-2"><a href="#put-2" aria-hidden="true" class="header-anchor">#</a> put</h4> <p>乍一看 multicastChannel 的 put 方法我们可能没有发现有什么特别的，我们可以对比一下 channel 的 put 方法，从上面 channel 的 put 方法的代码我们看到 put 方法会缓存 input，而且只会调用 takers 的第一个 taker 执行；但是 multicastChannel 的 put 方法正好和它相反，multicastChannel 没有接受 buffer 参数，所以它并不会缓存 input，而且它会调用所有 takers 去执行 input，我想这也是为啥它叫 multicast(多路广播)。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">put</span><span class="token punctuation">(</span><span class="token parameter">input</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isEnd</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">const</span> takers <span class="token operator">=</span> <span class="token punctuation">(</span>currentTakers <span class="token operator">=</span> nextTakers<span class="token punctuation">)</span>
+
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> len <span class="token operator">=</span> takers<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i <span class="token operator">&lt;</span> len<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> taker <span class="token operator">=</span> takers<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>taker<span class="token punctuation">[</span><span class="token constant">MATCH</span><span class="token punctuation">]</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      taker<span class="token punctuation">.</span><span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token function">taker</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="take-2"><a href="#take-2" aria-hidden="true" class="header-anchor">#</a> take</h4> <p>分析 take 的作用我们也可以参照上面的对比法，当和 channel 的 take 对比后我们发现 channel 的 take 会在 buffer 不为空时直接调用 cb 执行，但是 multicastChannel 并不会这样，它只会缓存进来的 cb；另外还有一个不同点就是 multicastChannel 的 take 还接收一个 match 参数，你可以传递一个比较方法，去判断 put 进来的 input 是否满足条件，如果返回 false 则不会处理这个 input。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">take</span><span class="token punctuation">(</span><span class="token parameter">cb<span class="token punctuation">,</span> matcher <span class="token operator">=</span> matchers<span class="token punctuation">.</span>wildcard</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span><span class="token constant">END</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+  cb<span class="token punctuation">[</span><span class="token constant">MATCH</span><span class="token punctuation">]</span> <span class="token operator">=</span> matcher
+  <span class="token function">ensureCanMutateNextTakers</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  nextTakers<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>cb<span class="token punctuation">)</span>
+
+  cb<span class="token punctuation">.</span>cancel <span class="token operator">=</span> <span class="token function">once</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">ensureCanMutateNextTakers</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token function">remove</span><span class="token punctuation">(</span>nextTakers<span class="token punctuation">,</span> cb<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="close-3"><a href="#close-3" aria-hidden="true" class="header-anchor">#</a> close</h4> <p>close 方法和 channel 的 close 并没有太大区别，所以这里不就讲了。</p> <h3 id="stdchannel"><a href="#stdchannel" aria-hidden="true" class="header-anchor">#</a> stdChannel</h3> <p>stdChannel 我也没有在文档里面看到有描述，不过和 multicastChannel 不同，stdChannel 内部是由调用的，所以接下来我们先简单分析一下 stdChannel 的代码，然后我们再看下 stdChannel 在内部的使用场景。</p> <h4 id="源码分析"><a href="#源码分析" aria-hidden="true" class="header-anchor">#</a> 源码分析</h4> <p>stdChannel 内部实际上继承了 multicastChannel，只不过修改了 put 方法其它都是一样的。
+stdChannel 的 put 方法会判断 <code>input[SAGA_ACTION]</code> 是否为真，为真表示的是这个 input 是 redux-saga 的 put 方法 dispatch 的，否则就是 redux dispatch 的，如果是 put 方法调用的则直接调用 multicastChannel 的 put 方法，否则调用 asap 方法，asap 方法是定义在 scheduler 里面，所以你可以去看 <a href="/LFESC/redux-saga/scheduler.html">scheduler</a> 这篇文章了解这个方法的作用。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">stdChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> chan <span class="token operator">=</span> <span class="token function">multicastChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> put <span class="token punctuation">}</span> <span class="token operator">=</span> chan
+  chan<span class="token punctuation">.</span><span class="token function-variable function">put</span> <span class="token operator">=</span> <span class="token parameter">input</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>input<span class="token punctuation">[</span><span class="token constant">SAGA_ACTION</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">put</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">asap</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">put</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> chan
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="内部使用场景"><a href="#内部使用场景" aria-hidden="true" class="header-anchor">#</a> 内部使用场景</h4> <p>通过全局搜索 stdChannel 在以下几个地方应该到了：
+<strong>sagaMiddlewareFactory</strong>
+我们可以看到 sagaMiddlewareFactory 会接收一个 channel 参数，如果不传的会默认设置为 stdChannel，然后在 sagaMiddleware 方法里面会调用 <code>channel.put(action)</code> 我们知道 sagaMiddlewareFactory 会创建一个 middleware(sagaMiddleware)，所以每次当我们通过 redux 的 dispatch 一个 action 的时候，stdChannel 就会执行 put 方法，通过上面对 multicastChannel.put 的分析，我们知道当 dispatch(action) 的时候，会调用所有的 takers，这也就是 <a href="https://redux-saga.js.org/docs/api/#takepattern" target="_blank" rel="noopener noreferrer">take<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> 的实现原理之一。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">sagaMiddlewareFactory</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> context <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> channel <span class="token operator">=</span> <span class="token function">stdChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sagaMonitor<span class="token punctuation">,</span> <span class="token operator">...</span>options <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+  <span class="token keyword">function</span> sagaMiddleware <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=&gt;</span> <span class="token parameter">action</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>sagaMonitor <span class="token operator">&amp;&amp;</span> sagaMonitor<span class="token punctuation">.</span>actionDispatched<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        sagaMonitor<span class="token punctuation">.</span><span class="token function">actionDispatched</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token function">next</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span> <span class="token comment">// hit reducers</span>
+      channel<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+      <span class="token keyword">return</span> result
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p><strong>runSaga</strong>
+另一个会用到 stdChannel 是 runSaga，runSaga 会接收一个 channel 参数，默认值是 stdChannel。
+随后会创建 env 对象，channel 是其中的一个参数。
+接着 env 作为参数传递给 proc 方法。
+在 proc 方法里面又会作为参数传给 runEffect 方法。
+在 runEffect 方法里面会传递给 effectRunner 方法，如果看过我之前的文章的话就知道 effectRunner 就是不同 effect 创建器（take put call......）创建的 effect 处理的方法。
+这里我们主要看一下处理 take 的 effectRunner: runTakeEffect，我们看到它内部调用了 channel.take 这个方法，所以至此 <a href="https://redux-saga.js.org/docs/api/#takepattern" target="_blank" rel="noopener noreferrer">take<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> 的实现原理之二也就浮出水面了，也就是说 take 方法内部的实现原理就是 stdChannel。</p> <div class="tip custom-block"><p class="custom-block-title">注意：</p> <p>runSaga 是在 sagaMiddlewareFactory 内部调用的，所以如果你不是单独调用 runSaga 方法，sagaMiddlewareFactory 的 channel 会直接传递给 runSaga 方法。</p></div> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">runSaga</span><span class="token punctuation">(</span>
+  <span class="token parameter"><span class="token punctuation">{</span> channel <span class="token operator">=</span> <span class="token function">stdChannel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> dispatch<span class="token punctuation">,</span> getState<span class="token punctuation">,</span> context <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> sagaMonitor<span class="token punctuation">,</span> effectMiddlewares<span class="token punctuation">,</span> onError <span class="token operator">=</span> logError <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  saga<span class="token punctuation">,</span>
+  <span class="token operator">...</span>args</span>
+<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+
+  <span class="token keyword">const</span> env <span class="token operator">=</span> <span class="token punctuation">{</span>
+    channel<span class="token punctuation">,</span>
+    dispatch<span class="token punctuation">:</span> <span class="token function">wrapSagaDispatch</span><span class="token punctuation">(</span>dispatch<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    getState<span class="token punctuation">,</span>
+    sagaMonitor<span class="token punctuation">,</span>
+    onError<span class="token punctuation">,</span>
+    finalizeRunEffect<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> <span class="token function">immediately</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> task <span class="token operator">=</span> <span class="token function">proc</span><span class="token punctuation">(</span>env<span class="token punctuation">,</span> iterator<span class="token punctuation">,</span> context<span class="token punctuation">,</span> effectId<span class="token punctuation">,</span> <span class="token function">getMetaInfo</span><span class="token punctuation">(</span>saga<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment">/* isRoot */</span> <span class="token boolean">true</span><span class="token punctuation">,</span> noop<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>sagaMonitor<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      sagaMonitor<span class="token punctuation">.</span><span class="token function">effectResolved</span><span class="token punctuation">(</span>effectId<span class="token punctuation">,</span> task<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> task
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">proc</span><span class="token punctuation">(</span><span class="token parameter">env<span class="token punctuation">,</span> iterator<span class="token punctuation">,</span> parentContext<span class="token punctuation">,</span> parentEffectId<span class="token punctuation">,</span> meta<span class="token punctuation">,</span> isRoot<span class="token punctuation">,</span> cont</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+  <span class="token keyword">function</span> <span class="token function">runEffect</span><span class="token punctuation">(</span><span class="token parameter">effect<span class="token punctuation">,</span> effectId<span class="token punctuation">,</span> currCb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>is<span class="token punctuation">.</span><span class="token function">promise</span><span class="token punctuation">(</span>effect<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// ......</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>is<span class="token punctuation">.</span><span class="token function">iterator</span><span class="token punctuation">(</span>effect<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// ......</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>effect <span class="token operator">&amp;&amp;</span> effect<span class="token punctuation">[</span><span class="token constant">IO</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> effectRunner <span class="token operator">=</span> effectRunnerMap<span class="token punctuation">[</span>effect<span class="token punctuation">.</span>type<span class="token punctuation">]</span>
+      <span class="token function">effectRunner</span><span class="token punctuation">(</span>env<span class="token punctuation">,</span> effect<span class="token punctuation">.</span>payload<span class="token punctuation">,</span> currCb<span class="token punctuation">,</span> executingContext<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      <span class="token comment">// ......</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span>
+</code></pre></div><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">function</span> <span class="token function">runTakeEffect</span><span class="token punctuation">(</span><span class="token parameter">env<span class="token punctuation">,</span> <span class="token punctuation">{</span> channel <span class="token operator">=</span> env<span class="token punctuation">.</span>channel<span class="token punctuation">,</span> pattern<span class="token punctuation">,</span> maybe <span class="token punctuation">}</span><span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">takeCb</span> <span class="token operator">=</span> <span class="token parameter">input</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>input <span class="token keyword">instanceof</span> <span class="token class-name">Error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">cb</span><span class="token punctuation">(</span>input<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isEnd</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>maybe<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">cb</span><span class="token punctuation">(</span><span class="token constant">TERMINATE</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">try</span> <span class="token punctuation">{</span>
+    channel<span class="token punctuation">.</span><span class="token function">take</span><span class="token punctuation">(</span>takeCb<span class="token punctuation">,</span> is<span class="token punctuation">.</span><span class="token function">notUndef</span><span class="token punctuation">(</span>pattern<span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token function">matcher</span><span class="token punctuation">(</span>pattern<span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">cb</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+  cb<span class="token punctuation">.</span>cancel <span class="token operator">=</span> takeCb<span class="token punctuation">.</span>cancel
+<span class="token punctuation">}</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">最后更新时间: </span> <span class="time">6/25/2019, 5:40:25 PM</span></div></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/LFESC/redux-saga/assets/js/app.be626336.js" defer></script><script src="/LFESC/redux-saga/assets/js/2.3b966b08.js" defer></script><script src="/LFESC/redux-saga/assets/js/7.f03a006d.js" defer></script>
+  </body>
+</html>
