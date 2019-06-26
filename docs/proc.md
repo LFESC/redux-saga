@@ -95,7 +95,9 @@ export default function proc(env, iterator, parentContext, parentEffectId, meta,
 next 方法里面有很多判断，判断传进来的参数，这里面我们先考虑最简单的方法
 就是 next 的参数都是空：
 这时它会调用 iterator(也就是Generator对象) 的 next 方法获取 yield 表达式生成的值 `result = iterator.next(arg)` 然后去判断 iterator 是否结束即当 `result.done === true` 时，当 iterator 执行完毕后会对 mainTask 执行一些操作，这个我们接下来会讲，当 generator 没有执行完时会调用 digestEffect 这个方法，这个我们也放在下面来讲。
->注意：iterator 就是在 [runSaga](./runSaga.md) 里面对传进来的 saga(Generator) 执行后的结果。
+::: tip 注意：
+iterator 就是在 [runSaga](./runSaga.md) 里面对传进来的 saga(Generator) 执行后的结果。
+:::
 ```js
 function next(arg, isErr) {
   try {
@@ -266,7 +268,9 @@ const finalRunEffect = env.finalizeRunEffect(runEffect)
 ### runEffect
 这个就是最终调用的方法了，注意因为一层层调用，你可能已经忘记了 effect 参数到底是什么了，runEffect 是在 digestEffect 方法里面调用的，而 digestEffect 是在 next 方法里面调用的，而 effect 就是在 next 里面的 result，其实也就是你传入的 saga(Generator) 内部 yeild 的结果。
 这里会对 effect 做一些判断，根据 effect 的值做不同的处理。
->注意：我们在 [effects](./effectCreators.md) 这一篇里面讲过 put call take 这些 effect creators 实际上只是返回一个 effect 对象要不怎么叫 effect creator 呢，至于这些 effect 是如何实现的就是在这个 runEffect 方法里面了。
+::: tip 注意：
+我们在 [effects](./effectCreators.md) 这一篇里面讲过 put call take 这些 effect creators 实际上只是返回一个 effect 对象要不怎么叫 effect creator 呢，至于这些 effect 是如何实现的就是在这个 runEffect 方法里面了。
+:::
 ```js
 function runEffect(effect, effectId, currCb) {
   /**
@@ -336,7 +340,8 @@ proc(env, effect, task.context, effectId, meta, /* isRoot */ false, currCb)
 #### 当 effect[IO] === true 时
 这个 effect[IO] 是个什么东西呢，其实就是 effect creators 如：call put take ...... 这些返回的对象里面会用添加一个 symbol IO 为 true，所以如果 effect[IO] === true 则表示这个 effect 是上述那些 api 产生的，所以调用这些 api 对应的 runner 去执行，下面这两句代码就是做这件事的。
 受限于篇幅所限我们将在 [effectRunnerMap](./effectRunnerMap.md) 这一篇里面去讲解这些 effect 究竟是如何实现的。
->注意：effect 对象时如何产生的，以及包含了哪些参数可以去看 [effects](./effectCreators.md) 这一篇。
+::: tip 注意：effect 对象时如何产生的，以及包含了哪些参数可以去看 [effects](./effectCreators.md) 这一篇。
+:::
 ```js
 const effectRunner = effectRunnerMap[effect.type]
 effectRunner(env, effect.payload, currCb, executingContext)
@@ -400,4 +405,4 @@ mainTask.cont(error, true)
 ### 返回值
 proc 方法会返回一个 task 对象，关于 task 对象内部 api 的实现可以去看 [task](./task.md) 那篇文章。
 ## 总结
-至此 Middleware API 就讲完了，主要涉及两个 api：createSagaMiddleware(options) 和 middleware.run(saga, ...args)，涉及到 [createSagaMiddleware](/.createSagaMiddleware.md)>[channel](/.channel.md)>[runSaga](./runSaga.md)>[proc](./proc.md) 这三篇文章。
+至此 Middleware API 就讲完了，主要涉及两个 api：createSagaMiddleware(options) 和 middleware.run(saga, ...args)，涉及到 [Middleware API](/.middleware.md)>[channel](/.channel.md)>[runSaga](./runSaga.md)>[proc](./proc.md) 这三篇文章。

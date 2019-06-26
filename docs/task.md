@@ -102,7 +102,9 @@ error: () => taskError,
 ```
 ### toPromise
 这个方法的目的是返回一个 promise 对象，如果 `status === ABORTED` 也就是任务报错了，则返回一个 rejected 状态值为 taskError 的 promise 对象，如果没有报错并且 `status !== RUNNING` 也就是任务正确执行完毕则返回一个 fulfilled 状态值为 taskResult 的 promise 对象。
->注：这个方法依赖一个方法 `deferred()` 去生成一个 promise 对象，这个方法很简单，你可以去 `pacages/deferred/src/index.js` 去看它的源码。
+::: tip 注意：
+这个方法依赖一个方法 `deferred()` 去生成一个 promise 对象，这个方法很简单，你可以去 `pacages/deferred/src/index.js` 去看它的源码。
+:::
 ```js
 function toPromise() {
   if (deferredEnd) {

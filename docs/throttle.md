@@ -1,6 +1,8 @@
 # throttle
 在发起到 Store 并且匹配 pattern 的一个 action 上派生一个 saga。 它在派生一次任务之后，仍然将新传入的 action 接收到底层的 buffer 中，至多保留（最近的）一个。但与此同时，它在 ms 毫秒内将暂停派生新的任务 —— 这也就是它被命名为节流阀（throttle）的原因。其用途，是在处理任务时，无视给定的时长内新传入的 action。
->注：简单来说就是函数节流在 redux-saga 里面的应用
+::: tip 注意：
+简单来说就是函数节流在 redux-saga 里面的应用
+:::
 ## 解析
 ### throttle
 可以看到 throttle 内部实际上就是通过 fork 实现的，只不过 fork 的第一个参数调用的是 throttleHelper，所以接下来我们就看一下 throttleHelper。

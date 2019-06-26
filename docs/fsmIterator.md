@@ -1,7 +1,9 @@
 # fsmIterator
 ## 解析
 我们发现 fsmIterator 内部调用的是 makeIterator，makeIterator 的作用就是返回一个迭代器，而迭代器最重要的就是 next 方法，所以我们主要看一下 next 方法。
->注：关于 makeIterator 的内部实现我也写了相关解析，可以去[这里](./makeIterator.md)查看
+::: tip 注意：
+关于 makeIterator 的内部实现我也写了相关解析，可以去[这里](./makeIterator.md)查看
+:::
 ```js
 export default function fsmIterator(fsm, startState, name) {
   let stateUpdater,

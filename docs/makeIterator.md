@@ -1,6 +1,8 @@
 # makeIterator
 makeIterator 顾名思义就是创建一个 iterator 对象。
->注：关于迭代器的相关知识可以参考<https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols>
+::: tip 注意：
+关于迭代器的相关知识可以参考<https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols>
+:::
 ## 解析
 - 首先创建了一个 iterator 对象，其中最重要的是 next 方法，因为这是实现迭代器协议的必要条件
 - 判断当前环境下是否支持 Symbol

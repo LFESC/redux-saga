@@ -3,6 +3,7 @@ scheduler.js 是 redux-saga 内部的一个文件，它的作用是在 redux-sag
 它暴露了两个 api：
 - asap
 - immediately
+
 这两个 api 被内部一些模块所使用：
 - [channel](./channel.md)
 - [effectRunnerMap](./effectRunnerMap.md)
@@ -92,21 +93,6 @@ function flush() {
   let task
   while (!semaphore && (task = queue.shift()) !== undefined) {
     exec(task)
-  }
-}
-```
-### asap
-```js
-/**
-  Executes or queues a task depending on the state of the scheduler (`suspended` or `released`)
-  根据调度程序的状态执行或对任务排队(“挂起”或“释放”)
-**/
-export function asap(task) {
-  queue.push(task)
-
-  if (!semaphore) {
-    suspend()
-    flush()
   }
 }
 ```

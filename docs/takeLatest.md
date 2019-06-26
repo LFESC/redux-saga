@@ -56,4 +56,6 @@ takeLatest 的执行顺序可能是以下两种情况之一：
 下面我们来分析一下两种执行顺序：
 - 第一种：当 task 为空时，会先 take 然后 york 然后再 take，这种情况只适用于前一个 york 的任务执行完之后才会触发下一个任务
 - 第二种：当 task 不为空时，会先 take 然后 cancel 然后再 york，这种情况是当前一个 york 的任务还没执行完就又触发了下一个任务，此时会先取消前一个任务再执行当前的任务，保证执行的永远是最新的任务
->注：fsmIterator 的详细解读在[这篇文章](./fsmIterator.md)里
+::: tip 注意：
+fsmIterator 的详细解读在[这篇文章](./fsmIterator.md)里
+:::

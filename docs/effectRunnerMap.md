@@ -1,7 +1,9 @@
 # effectRunnerMap
 我们在 [proc](./proc.md) 这一篇里面说 effect creators 所产生的 effects 最终会在 effectRunnerMap 里面去执行，所以我们在
 这篇里面讲讲 effectRunnerMap 是如何实现这些 effects 的。
->注意：由于 effect creators 实在过多，所以我会挑一些常用的 effect creators(call fork spawn put putResolve take takeMaybe...) 去讲解。
+::: tip 注意：
+由于 effect creators 实在过多，所以我会挑一些常用的（[effectCreators](./effectcreators.md) 里面讲到的）去讲解。
+:::
 ## 源码地址
 `packages/core/src/internal/effectRunnerMap.js`
 ## 解析
@@ -34,8 +36,9 @@ export default effectRunnerMap
 - iterator: 如果 result 是 iterator，则递归调用 [proc](./proc.md) 方法
 - 其它: 其它情况直接调用 cb
 - 错误: 如果执行过程发生错误也会调用 cb
->注意：这里的 cb 就是我们在 [proc](./proc.md) 那篇里面讲的 runEffect 方法里面定义的 currCb
-我在那篇里面详细说过 currCb 的作用，简单来说就是继续执行 saga(Generator) 方法，所以为什么 call 方法是阻塞的呢，就是因为它在 fn 执行完毕之后才去调用 currCb。
+::: tip 注意：
+这里的 cb 就是我们在 [proc](./proc.md) 那篇里面讲的 runEffect 方法里面定义的 currCb 我在那篇里面详细说过 currCb 的作用，简单来说就是继续执行 saga(Generator) 方法，所以为什么 call 方法是阻塞的呢，就是因为它在 fn 执行完毕之后才去调用 currCb。
+:::
 ```js
 function runCallEffect(env, { context, fn, args }, cb, { task }) {
   // catch synchronous failures; see #152
@@ -63,18 +66,17 @@ function runCallEffect(env, { context, fn, args }, cb, { task }) {
 ```
 ### runForkEffect
 [fork](https://redux-saga.js.org/docs/api/#forkfn-args) 和 [spawn](https://redux-saga.js.org/docs/api/#spawnfn-args) 对应的都是 runForkEffect 这个方法。
-1.首先会通过 createTaskIterator 创建一个 iterator 对象，具体创建过程可以去看源码，并不复杂，简单来说就是如果 fn 返回的结果是一个 iterator 那就直接返回，否则就创建一个 iterator 对象。
-2.然后根据 iterator 或是 fn 创建一个 meta 对象。
-3.接着调用 immediately 去执行传入的方法。
-4.这个方法会调用 [proc](./proc.md) 生成一个 child 对象，这个是一个 [task](./task.md)。
-5.然后去判断 detached 是否为 true，这个值是属于 runForkEffect 里面的第二个参数 payload，如果是 fork 则 detached 为 undefined，这一点可以去看 io.js，如果是 spawn 则 detached 为 true，关于 attached 和 detached 的区别我在这里就不赘述了，官方文档里面已经有说明。
-6.如果是 spawn 则直接调用 cb(child) 继续执行 saga。
-7.如果是 fork，则会判断 child task 的状态，并根据状态去执行 parent.queue 的一些方法，也就是父 task 会根据子 task 做一些操作，这也就体现了 fork 和 spawn 的区别，fork 的任务会附加在父任务上面，细节的地方还请看我的 [task](./task.md) 这一篇，最终如果 task 没有被终止也会调用 cb(child) 也就是调用 currCb 让 saga 继续执行下去。  
->注：
->
->queue: 关于 queue 的一些方法，比如这里用到的 addTask 和 abort 可以去看 [forkQueue](./forkQueue.md) 这一篇。
->
->createTaskIterator: 内部实现基于 makeIterator 方法，关于这个方法可以看[这篇文章](./makeIterator.md) 
+1. 首先会通过 createTaskIterator 创建一个 iterator 对象，具体创建过程可以去看源码，并不复杂，简单来说就是如果 fn 返回的结果是一个 iterator 那就直接返回，否则就创建一个 iterator 对象。  
+2. 然后根据 iterator 或是 fn 创建一个 meta 对象。  
+3. 接着调用 immediately 去执行传入的方法。  
+4. 这个方法会调用 [proc](./proc.md) 生成一个 child 对象，这个是一个 [task](./task.md)。  
+5. 然后去判断 detached 是否为 true，这个值是属于 runForkEffect 里面的第二个参数 payload，如果是 fork 则 detached 为 undefined，这一点可以去看 io.js，如果是 spawn 则 detached 为 true，关于 attached 和 detached 的区别我在这里就不赘述了，官方文档里面已经有说明。  
+6. 如果是 spawn 则直接调用 cb(child) 继续执行 saga。  
+7. 如果是 fork，则会判断 child task 的状态，并根据状态去执行 parent.queue 的一些方法，也就是父 task 会根据子 task 做一些操作，这也就体现了 fork 和 spawn 的区别，fork 的任务会附加在父任务上面，细节的地方还请看我的 [task](./task.md) 这一篇，最终如果 task 没有被终止也会调用 cb(child) 也就是调用 currCb 让 saga 继续执行下去。  
+::: tip 注意：
+queue: 关于 queue 的一些方法，比如这里用到的 addTask 和 abort 可以去看 [forkQueue](./forkQueue.md)   
+createTaskIterator: 内部实现基于 makeIterator 方法，关于这个方法可以看[这篇文章](./makeiterator.md) 
+:::
 ```js
 function runForkEffect(env, { context, fn, args, detached }, cb, { task: parent }) {
   const taskIterator = createTaskIterator({ context, fn, args })
@@ -101,10 +103,10 @@ function runForkEffect(env, { context, fn, args, detached }, cb, { task: parent 
 ```
 ### runPutEffect
 [put](https://redux-saga.js.org/docs/api/#putaction) 和 [putResolve](https://redux-saga.js.org/docs/api/#putresoveaction) 对应的都是 runPutEffect 这个方法。
-1.首先调用 asap 这个方法，这个方法在 scheduler 里面，它会将传入的方法添加到 queue 里面，具体的细节可以看 [scheduler](./scheduler.md) 这一篇。
-2.在方法里面会执行 action 并将返回的结果存入 result。
-3.判断 resolve 是否为 true 以及 result 是否为 promise，如果成立则表示调用的是 putResolve 否则调用的则是 put。
-4.如果调用的是 putResolve 则会调用 [resolvePromise](./resolvePromise.md) 方法去执行 promise 然后再调用 cb，这也就体现了 putResolve 的作用：返回的 effect 是阻塞的，如果返回了一个 promise 只有当 promise 执行完毕才会执行接下来的代码。
+1. 首先调用 asap 这个方法，这个方法在 scheduler 里面，它会将传入的方法添加到 queue 里面，具体的细节可以看 [scheduler](./scheduler.md) 这一篇。
+2. 在方法里面会执行 action 并将返回的结果存入 result。
+3. 判断 resolve 是否为 true 以及 result 是否为 promise，如果成立则表示调用的是 putResolve 否则调用的则是 put。
+4. 如果调用的是 putResolve 则会调用 [resolvePromise](./resolvePromise.md) 方法去执行 promise 然后再调用 cb，这也就体现了 putResolve 的作用：返回的 effect 是阻塞的，如果返回了一个 promise 只有当 promise 执行完毕才会执行接下来的代码。
 ```js
 function runPutEffect(env, { channel, action, resolve }, cb) {
   /**
@@ -132,8 +134,8 @@ function runPutEffect(env, { channel, action, resolve }, cb) {
 ```
 ### runTakeEffect
 [take](https://redux-saga.js.org/docs/api/#takepattern) 和 [takeMaybe](https://redux-saga.js.org/docs/api/#takemaybepattern) 对应的都是 runTakeEffect 这个方法。
-1.首先创建一个 takeCb 方法，它内部会调用 cb，也就是 [currCb](./proc.md) 它会调用 next 方法继续执行 saga，当然这里要注意对于 maybe 的判断，如果 !maybe 成立也就是调用 take 的情况，如果 !maybe 不成立也就是调用 takeMaybe 的情况，这两种方法会在接收到 END 这个 action 时有不同的表现，从代码上来看就是如果 !maybe 成立也就是调用的 take 方法，则执行 cb(TERMINATE) 终止 saga，如果不成立也就是 takeMaybe 则继续执行 cb。
-2.take 内部其实调用的是 channel.take 方法，关于 channel.take 做了什么可以去看 [channel](./channel.md) 这篇文章。
+1. 首先创建一个 takeCb 方法，它内部会调用 cb，也就是 [currCb](./proc.md) 它会调用 next 方法继续执行 saga，当然这里要注意对于 maybe 的判断，如果 !maybe 成立也就是调用 take 的情况，如果 !maybe 不成立也就是调用 takeMaybe 的情况，这两种方法会在接收到 END 这个 action 时有不同的表现，从代码上来看就是如果 !maybe 成立也就是调用的 take 方法，则执行 cb(TERMINATE) 终止 saga，如果不成立也就是 takeMaybe 则继续执行 cb。
+2. take 内部其实调用的是 channel.take 方法，关于 channel.take 做了什么可以去看 [channel](./channel.md) 这篇文章。
 ```js
 function runTakeEffect(env, { channel = env.channel, pattern, maybe }, cb) {
   const takeCb = input => {
@@ -253,7 +255,9 @@ function runRaceEffect(env, effects, cb, { digestEffect }) {
 1. 先判断传入的 effects 的 keys 是否长度为零，是则调用 cb 然后 return 说明没有需要处理的 effects
 2. 同 race 第二部分通过 createAllStyleChildCallbacks 方法创建 childCallbacks
 3. 同 race 第三部分，遍历 keys 调用 digestEffect 执行 effect，执行完后会调用传入的回调函数 childCallbacks
->注：digestEffect 方法是在 proc.js 里面定义的，详情可以去看[这篇文章](.proc.md)
+::: tip 注意：
+digestEffect 方法是在 proc.js 里面定义的，详情可以去看[这篇文章](./proc.md)
+:::
 ```js
 function runAllEffect(env, effects, cb, { digestEffect }) {
   const effectId = currentEffectId

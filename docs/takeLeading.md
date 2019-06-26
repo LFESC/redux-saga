@@ -42,6 +42,6 @@ takeLeading 会不断在 q1 和 q2 状态之间切换除非有错误产生，最
 - yTake 会调用 take 方法，参数就是传入的 patternOrChannel
 - yCall 会调用 call 方法，参数就是传入的 worker
 这样就会产生一个效果：不断接收 action，然后执行匹配的方法，因为 call 是阻塞的，所以必须等到当前任务执行完毕才会执行下一个任务，这也正是 takeLeading 的作用。
->注：  
+::: tip 注意：  
 1.fsmIterator 的详细解读在[这篇文章](./fsmIterator.md)里  
 2.如果你看过 [takeEvery](./takeEvery.md) 那篇，你会发现 takeLeading 的内部实现和它极其相似，只不过 york 变成了 call 

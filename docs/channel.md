@@ -4,7 +4,6 @@ channel 不仅作为接口保留给用户，并且其它的接口内部实现也
 `core/src/internal/channel.js`
 ## 概述
 channel 返回了四个方法：channel eventChannel multicastChannel stdChannel。
->注意：channel 里面依赖了 buffer 模块，所以如果你对 buffer 不太熟悉可以去看我对 [buffers](./buffers.md) 的解析。
 ```js
 export function channel(buffer = buffers.expanding()) {
   // ......
@@ -23,12 +22,11 @@ export function stdChannel() {
 }
 ```
 ## 解析
-channel 的实现内部依赖 buffer，所以如果你对它不了解建议去看 [buffer](./buffer.md) 这篇文章。
->名词解释：
->
->**takers:** 存放 cb
->
->**buffer:** 存放 put 进来的数据
+channel 的实现内部依赖 buffer，所以如果你对它不了解建议去看 [buffers](./buffers.md) 这篇文章。
+::: tip 名词解释：
+**takers:** 存放 cb  
+**buffer:** 存放 put 进来的数据
+:::
 ### channel
 首先看 channel 这个方法，它返回了一个对象，定义了四个方法：take put close flush。
 ```js
@@ -118,7 +116,7 @@ function put(input) {
 ```
 #### flush
 1.首先判断如果 channel 已经关闭了并且 buffer 为空则调用 cb(END)，并返回。
-2.如果上述判断不成立则用传递进来的 cb 调用 [buffer.flush()](./buffer.md) 的返回值，返回值是所有 buffer 里面的数据。
+2.如果上述判断不成立则用传递进来的 cb 调用 [buffer.flush()](./buffers.md#ringbuffer) 的返回值，返回值是所有 buffer 里面的数据。
 ```js
 function flush(cb) {
   if (process.env.NODE_ENV !== 'production') {
@@ -133,9 +131,9 @@ function flush(cb) {
 }
 ```
 #### close
-1.如果 channel 已经关闭了就直接返回。
-2.否则将 closed 赋值为 true，表示 channel 关闭不允许做 put 操作了。
-3.清空 takers 并且调用所有的 taker，值为 END。
+1. 如果 channel 已经关闭了就直接返回。   
+2. 否则将 closed 赋值为 true，表示 channel 关闭不允许做 put 操作了。   
+3. 清空 takers 并且调用所有的 taker，值为 END。 
 ```js
 function close() {
   if (process.env.NODE_ENV !== 'production') {
@@ -260,7 +258,9 @@ function take(cb) {
 ```
 ### multicastChannel
 关于 multicastChannel，我并没有在官方的文档看到这个 api 的用法，我只能通过名称去揣测这个方法的作用，multicase 翻译成中文有多路广播之意，看了下源码发现确实是这个作用，下面我们就通过源码去看看它是如何实现的。
->注：所有的 channel 都会返回 take put close 方法，multicastChannel 也不例外，所以只要去看这几个 api 是如何实现的，也就了解了它的功能。
+::: tip 注意：
+所有的 channel 都会返回 take put close 方法，multicastChannel 也不例外，所以只要去看这几个 api 是如何实现的，也就了解了它的功能。
+:::
 ```js
 export function multicastChannel() {
   let closed = false
@@ -387,7 +387,9 @@ export default function sagaMiddlewareFactory({ context = {}, channel = stdChann
 在 proc 方法里面又会作为参数传给 runEffect 方法。
 在 runEffect 方法里面会传递给 effectRunner 方法，如果看过我之前的文章的话就知道 effectRunner 就是不同 effect 创建器（take put call......）创建的 effect 处理的方法。
 这里我们主要看一下处理 take 的 effectRunner: runTakeEffect，我们看到它内部调用了 channel.take 这个方法，所以至此 [take](https://redux-saga.js.org/docs/api/#takepattern) 的实现原理之二也就浮出水面了，也就是说 take 方法内部的实现原理就是 stdChannel。
->注：runSaga 是在 sagaMiddlewareFactory 内部调用的，所以如果你不是单独调用 runSaga 方法，sagaMiddlewareFactory 的 channel 会直接传递给 runSaga 方法。
+::: tip 注意：
+runSaga 是在 sagaMiddlewareFactory 内部调用的，所以如果你不是单独调用 runSaga 方法，sagaMiddlewareFactory 的 channel 会直接传递给 runSaga 方法。
+:::
 ```js
 export function runSaga(
   { channel = stdChannel(), dispatch, getState, context = {}, sagaMonitor, effectMiddlewares, onError = logError },

@@ -4,6 +4,8 @@
 `core/src/internal/middleware.js`
 ## 解析
 ### createSagaMiddleware
+创建一个 Redux middleware，并将 Sagas 连接到 Redux Store。
+这个方法的内部实现就是下方的 sagaMiddlewareFactory 方法。
 #### sagaMiddlewareFactory
 createSagaMiddleware 就是 sagaMiddlewareFactory
 ```js
@@ -27,7 +29,7 @@ export default function sagaMiddlewareFactory({ context = {}, channel = stdChann
 createSagaMiddleware 返回的是一个叫 sagaMiddleware 的方法
 sagaMiddleware 就是一个 redux 的 middleware 所以它接收 getState 和 dispatch 两个参数
 返回一个高阶方法，这个也是 redux 的 middleware 的要求，在这个高阶函数里面
-有队 sagaMonitor 的处理，这个我们稍后会讲，然后调用了 `next(action)` 这个没什么可说的
+有对 [sagaMonitor](./sagaMonitor.md) 的处理，然后调用了 `next(action)` 这个没什么可说的
 最后执行 `channel.put(action)` 然后返回 `next(action)` 的结果。
 主要的逻辑就在 `channel.put(action)` 这里面，这个我们会在 [channel](./channel.md) 这篇里面详细介绍。
 ```js

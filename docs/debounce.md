@@ -1,6 +1,8 @@
 # debounce
 在发起到 Store 并且匹配 pattern 的一个 action 上派生一个 saga。Saga 将在停止获取 action ms 毫秒之后调用。这是为了防止调用 saga 在 action 被处理之前。
->注：简单来说就是函数防抖在 redux-saga 里面的应用
+::: tip 注意：
+简单来说就是函数防抖在 redux-saga 里面的应用
+:::
 ## 解析
 ### debounce
 可以看到 debounce 内部实际上就是通过 fork 实现的，只不过 fork 的第一个参数调用的是 debounceHelper，所以接下来我们就看一下 debounceHelper。

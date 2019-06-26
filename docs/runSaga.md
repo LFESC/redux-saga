@@ -1,6 +1,8 @@
 # runSaga
-在 [createSagaMiddleware](./createSagaMiddleware.md) 一篇中我们说 `middleware.run(saga, ...args)` 这个 api 其实调用的是 runSaga 这个方法，所以在这篇里我们就来讲讲 runSaga 都做了些什么。
->注：runSaga 不仅仅是一个内部方法，也作为 api 暴露给了用户
+在 [Middleware API](./middleware.md) 一篇中我们说 `middleware.run(saga, ...args)` 这个 api 其实调用的是 runSaga 这个方法，所以在这篇里我们就来讲讲 runSaga 都做了些什么。
+::: tip 注意：
+runSaga 不仅仅是一个内部方法，也作为 api 暴露给了用户
+:::
 ## 源码位置
 `packages/core/src/internal/runSaga.js`
 ## 概述
@@ -13,10 +15,10 @@ export function runSaga() {
 ## 解析
 这里我把和 dev 以及 sagaMonitor 相关的代码先移除掉，剩下的就是主要逻辑
 可以看到剩下的代码主要就做了三件事。
->注意：我们在 [createSagaMiddleware](./createSagaMiddleware.md) 那篇的末尾说到调用
-runSaga 方法时传递了一些前置参数在这里就是你看到的 runSaga 接收的第一个参数对象，而第二个
-和第三个参数才是我们调用 `middleware.run(saga, ...args)` 真正传递过去的参数，这里的 saga
-就是我们要执行的那个 Generator 方法。
+我们在 [Middleware API](./middleware.md) 那篇的末尾说到调用runSaga 方法时传递了一些前置参数在这里就是你看到的 runSaga 接收的第一个参数对象，而第二个和第三个参数才是我们调用 `middleware.run(saga, ...args)` 真正传递过去的参数，这里的 saga 就是我们要执行的那个 Generator 方法。
+::: tip 注意：
+sagaMonitor 的解析可以去看[这篇文章](./sagaMonitor.md)
+:::
 ```js
 export function runSaga(
   { channel = stdChannel(), dispatch, getState, context = {}, sagaMonitor, effectMiddlewares, onError = logError },

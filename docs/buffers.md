@@ -1,6 +1,7 @@
 # buffers
-Buffer 用于为 channel 实现缓存策略。Buffer 接口定义了四个方法：isEmpty put take flush。
-buffers 文件提供了5种类型的 Buffer：none fixed expanding dropping sliding
+Buffer 用于为 channel 实现缓存策略。  
+Buffer 接口定义了四个方法：isEmpty put take flush。  
+buffers 文件提供了5种类型的 Buffer：none fixed expanding dropping sliding。
 ## 源码地址
 `packages/core/src/internal/buffers.js`
 ## 解析
